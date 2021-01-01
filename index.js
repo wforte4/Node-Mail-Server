@@ -9,7 +9,6 @@ var serveIndex = require('serve-index')
 
 const AuthorizationRouter = require('./authorization/routes.config');
 const UsersRouter = require('./users/routes.config');
-const TasksRouter = require('./tasks/routes.config')
 const ThoughtRouter = require('./thought/routes.config')
 const ProjectsRouter = require('./projects/routes.config')
 const ContactRouter = require('./contact/routes.config')
@@ -42,7 +41,6 @@ app.use('/ftp', express.static('uploads'), serveIndex('uploads', {'icons': true}
 app.use(bodyParser.json());
 AuthorizationRouter.routesConfig(app);
 UsersRouter.routesConfig(app);
-TasksRouter.routesConfig(app);
 ProjectsRouter.routesConfig(app);
 ContactRouter.routesConfig(app);
 ThoughtRouter.routesConfig(app);

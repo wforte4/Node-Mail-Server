@@ -1,5 +1,8 @@
 const UserModel = require('../models/users.model');
 const crypto = require('crypto');
+const jwtSecret = require('../../common/config/env.config.js').jwt_secret,
+jwt = require('jsonwebtoken');
+const sendMail = require('../../common/middlewares/sendMail');
 
 exports.insert = (req, res) => {
     let salt = crypto.randomBytes(16).toString('base64');
@@ -53,3 +56,20 @@ exports.removeById = (req, res) => {
             res.status(204).send({});
         });
 };
+
+exports.forgotPassword = (req, res) => {
+    let token = jwt.sign(req.params.email, jwtSecret);
+    console.log(req.params.email)
+    const url = 'http://localhost:3000/changepassword/' + token;
+    const mail = sendMail.sendNewEmail(req.params.email, `Confirmation: <a href='${url}'>${url}</a>`, 'Forgot Password')
+    if(mail) {
+        res.status(200).send({confirmed: mail.accepted})
+    }
+    
+}
+
+exports.changePassword = (req, res) => {
+    console.log(req.jwt)
+
+
+}

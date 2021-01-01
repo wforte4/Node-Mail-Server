@@ -13,7 +13,7 @@ exports.routesConfig = function (app) {
     ]);
     app.get('/users', [
         ValidationMiddleware.validJWTNeeded,
-        PermissionMiddleware.minimumPermissionLevelRequired(PAID),
+        PermissionMiddleware.minimumPermissionLevelRequired(ADMIN),
         UsersController.list
     ]);
     app.get('/users/:userId', [
@@ -33,4 +33,5 @@ exports.routesConfig = function (app) {
         PermissionMiddleware.minimumPermissionLevelRequired(ADMIN),
         UsersController.removeById
     ]);
+    app.get('/users/forgotpass/:email', UsersController.forgotPassword)
 };

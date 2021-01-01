@@ -21,13 +21,24 @@ thoughtSchema.findById = function (cb) {
     return this.model('Thoughts').find({id: this.id}, cb);
 };
 
+thoughtSchema.statics.findByName = function(name) {
+    return this.find({ user: name});
+};
+
 const Thought = mongoose.model('Thoughts', thoughtSchema);
 
 
 exports.createThought = (ThoughtData) => {
-    const Thought = new Thought(ThoughtData);
+    const newThought = new Thought(ThoughtData);
     console.log('New Thought Created')
-    return Thought.save();
+    return newThought.save();
+}
+
+exports.getByUser = (UserEmail) => {
+    return Thought.findByName(UserEmail).then(results => {
+        console.log(results)
+        return results
+    })
 }
 
 exports.list = (perPage, page) => {

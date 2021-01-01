@@ -6,7 +6,9 @@ const userSchema = new Schema({
     lastName: String,
     email: String,
     password: String,
-    permissionLevel: Number
+    permissionLevel: Number,
+    themeDefault: {type: String, default: 'light'},
+    created_at: {type: Date, default: Date.now}
 });
 
 userSchema.virtual('id').get(function () {
@@ -28,6 +30,7 @@ const User = mongoose.model('Users', userSchema);
 exports.findByEmail = (email) => {
     return User.find({email: email});
 };
+
 exports.findById = (id) => {
     return User.findById(id)
         .then((result) => {
@@ -62,6 +65,12 @@ exports.patchUser = (id, userData) => {
     return User.findOneAndUpdate({
         _id: id
     }, userData);
+};
+
+exports.resetPass = (email, confirmation) => {
+    return User.findOneAndUpdate({
+        email: email
+    }, {password: confirmation});
 };
 
 exports.removeById = (userId) => {

@@ -2,7 +2,7 @@ const ThoughtModel = require('../models/tasks.model')
 
 
 exports.insert = (req, res) => {
-    ThoughtModel.createTask(req.body)
+    ThoughtModel.createThought(req.body)
         .then((result) => { 
             res.status(201).send({id: result._id});
         });
@@ -28,5 +28,12 @@ exports.removeById = (req, res) => {
     ThoughtModel.removeById(req.params.thoughtID)
         .then((result)=>{
             res.status(204).send({});
+        });
+};
+
+exports.getByEmail = (req, res) => {
+    ThoughtModel.getByUser(req.params.email)
+        .then((result)=>{
+            res.status(200).send(result);
         });
 };
