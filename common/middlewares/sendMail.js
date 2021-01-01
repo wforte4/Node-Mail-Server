@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 
-exports.sendNewEmail = (email, text, subject) => {
+exports.sendNewEmail = async (email, text, subject) => {
     
     const smtpTrans = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -21,7 +21,7 @@ exports.sendNewEmail = (email, text, subject) => {
       }
     
       // Attempt to send the email
-      smtpTrans.sendMail(mailOpts, (error, response) => {
+      await smtpTrans.sendMail(mailOpts, (error, response) => {
         if (error) {
           return error
         }

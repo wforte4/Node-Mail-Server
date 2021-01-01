@@ -22,6 +22,10 @@ exports.routesConfig = function (app) {
         PermissionMiddleware.onlySameUserOrAdminCanDoThisAction,
         UsersController.getById
     ]);
+    app.get('/users/changepassword/:newpass', [
+        ValidationMiddleware.validJWTNeeded,
+        UsersController.changePassword
+    ])
     app.patch('/users/:userId', [
         ValidationMiddleware.validJWTNeeded,
         PermissionMiddleware.minimumPermissionLevelRequired(FREE),

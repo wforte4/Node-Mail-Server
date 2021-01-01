@@ -60,16 +60,29 @@ exports.removeById = (req, res) => {
 exports.forgotPassword = (req, res) => {
     let token = jwt.sign(req.params.email, jwtSecret);
     console.log(req.params.email)
-    const url = 'http://localhost:3000/changepassword/' + token;
-    const mail = sendMail.sendNewEmail(req.params.email, `Confirmation: <a href='${url}'>${url}</a>`, 'Forgot Password')
-    if(mail) {
-        res.status(200).send({confirmed: mail.accepted})
+    const url = 'http://localhost:3000/changepassword?auth=' + token;
+    try {
+        const mail = sendMail.sendNewEmail(req.params.email, `Click Here: ${url}`, 'Forgot Password')
+    } catch (e) {
+        console.log(e)
+        res.status(400).send({confirmed: "Failed"})
     }
+    res.status(200).send({Confirmed: "Success"})
+
     
 }
 
 exports.changePassword = (req, res) => {
     console.log(req.jwt)
+    console.log(req.params.newpass)
 
+    let salt = crypto.randomBytes(16).toString('base64');
+    let hash = crypto.createHmac('sha512', salt).update(req.params.newpass).digest("base64");
+    req.params.newpass = salt + "$" + hash;
+
+    UserModel.resetPass(req.jwt, req.params.newpass).then((result) => {
+        console.log(result)
+        res.status(200).send({Confirmation: 'Password Changed'})
+    })
 
 }
