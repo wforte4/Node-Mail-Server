@@ -4,15 +4,30 @@ const jwtSecret = require('../../common/config/env.config.js').jwt_secret,
 jwt = require('jsonwebtoken');
 const sendMail = require('../../common/middlewares/sendMail');
 
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     let salt = crypto.randomBytes(16).toString('base64');
     let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
     req.body.password = salt + "$" + hash;
     req.body.permissionLevel = 1;
-    UserModel.createUser(req.body)
+    let alreadyExists = false
+    try {
+        const hasAccount = await UserModel.findByEmail(req.body.email)
+        console.log(hasAccount)
+        if(hasAccount.length > 0) throw "User has account"
+    } catch (e) {
+        console.log(e)
+        alreadyExists = true;
+        res.status(500).send({error: e})
+    }
+    
+    if(!alreadyExists) {
+        UserModel.createUser(req.body)
         .then((result) => { 
             res.status(201).send({id: result._id});
         });
+    }
+    
+    
 };
 
 exports.list = (req, res) => {
@@ -37,15 +52,18 @@ exports.getById = (req, res) => {
         });
 };
 exports.patchById = (req, res) => {
+    console.log(req.params.userId)
     if (req.body.password) {
         let salt = crypto.randomBytes(16).toString('base64');
         let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
         req.body.password = salt + "$" + hash;
     }
+    console.log('hit')
 
-    UserModel.patchUser(req.params.userId, req.body)
+    UserModel.patchUser(req.params.userId, req.body.userData)
         .then((result) => {
-            res.status(204).send({});
+            console.log(result)
+            return res.status(200).send(result);
         });
 
 };
@@ -57,17 +75,17 @@ exports.removeById = (req, res) => {
         });
 };
 
-exports.forgotPassword = (req, res) => {
-    let token = jwt.sign(req.params.email, jwtSecret);
+exports.forgotPassword = async (req, res) => {
+    let token = jwt.sign({email: req.params.email}, jwtSecret);
     console.log(req.params.email)
     const url = 'http://localhost:3000/changepassword?auth=' + token;
     try {
-        const mail = sendMail.sendNewEmail(req.params.email, `Click Here: ${url}`, 'Forgot Password')
+        const mail = await sendMail.sendNewEmail(req.params.email, `Click Here: ${url}`, 'Forgot Password')
+        res.status(200).send({Confirmed: "Success"})
     } catch (e) {
         console.log(e)
         res.status(400).send({confirmed: "Failed"})
     }
-    res.status(200).send({Confirmed: "Success"})
 
     
 }
@@ -80,7 +98,7 @@ exports.changePassword = (req, res) => {
     let hash = crypto.createHmac('sha512', salt).update(req.params.newpass).digest("base64");
     req.params.newpass = salt + "$" + hash;
 
-    UserModel.resetPass(req.jwt, req.params.newpass).then((result) => {
+    UserModel.resetPass(req.jwt.email, req.params.newpass).then((result) => {
         console.log(result)
         res.status(200).send({Confirmation: 'Password Changed'})
     })

@@ -5,6 +5,7 @@ const thoughtSchema = new Schema({
     thought: String,
     user: String,
     mindset: String,
+    connectedThought: String,
     created_at: {type: Date, default: Date.now}
 });
 

@@ -7,7 +7,7 @@ const userSchema = new Schema({
     email: String,
     password: String,
     permissionLevel: Number,
-    themeDefault: {type: String, default: 'light'},
+    themeDefault: {type: String, default: 'Light'},
     created_at: {type: Date, default: Date.now}
 });
 
@@ -28,7 +28,16 @@ const User = mongoose.model('Users', userSchema);
 
 
 exports.findByEmail = (email) => {
-    return User.find({email: email});
+    return new Promise((resolve, reject) => {
+        User.find({email: email})
+            .exec(function (err, user) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(user);
+                }
+            })
+    });
 };
 
 exports.findById = (id) => {
