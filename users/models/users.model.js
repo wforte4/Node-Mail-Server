@@ -70,8 +70,8 @@ exports.list = (perPage, page) => {
     });
 };
 
-exports.patchUser = (id, userData) => {
-    return User.findOneAndUpdate({
+exports.patchUser = async (id, userData) => {
+    return await User.updateOne({
         _id: id
     }, userData);
 };

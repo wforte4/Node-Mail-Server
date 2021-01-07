@@ -51,7 +51,7 @@ exports.getById = (req, res) => {
             res.status(200).send(result);
         });
 };
-exports.patchById = (req, res) => {
+exports.patchById = async (req, res) => {
     console.log(req.params.userId)
     if (req.body.password) {
         let salt = crypto.randomBytes(16).toString('base64');
@@ -60,7 +60,7 @@ exports.patchById = (req, res) => {
     }
     console.log('hit')
 
-    UserModel.patchUser(req.params.userId, req.body.userData)
+    await UserModel.patchUser(req.params.userId, req.body.userData)
         .then((result) => {
             console.log(result)
             return res.status(200).send(result);
