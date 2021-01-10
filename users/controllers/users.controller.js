@@ -76,11 +76,22 @@ exports.removeById = (req, res) => {
 };
 
 exports.forgotPassword = async (req, res) => {
-    let token = jwt.sign({email: req.params.email}, jwtSecret);
+    let token = jwt.sign({email: req.params.email}, jwtSecret, {expiresIn: '10h'});
     console.log(req.params.email)
-    const url = 'https://synapaseflash.com/changepassword?auth=' + token;
+    const url = 'https://synapseflash.com/changepassword?auth=' + token;
     try {
-        const mail = await sendMail.sendNewEmail(req.params.email, `Click Here: ${url}`, 'Forgot Password')
+        const mail = await sendMail.sendNewEmail(req.params.email, 'Forgot Password', 
+        `
+        <div style="float: left; margin-left: 5%; width: 70%; height: 300px; padding: 100px 10%; background: rgba(10,10,10,1); position: relative; border-radius: 8px;">
+            <div style="display: flex; justify-content: center; align-items: center; align-content: center; width: 100%;"><img src="https://synapseflash.com/think.png" style="float: left; width: 50px; height: 50px; margin: 25px 0;"></img></div>
+            <h1 style="float: left; width: 100%; font: 26px arial; color: white;">Synapse Flash Password Reset</h1>
+            <h2 style="float: left; width: 100%; font: 14px arial: color: white; margin: 8px 0;">This link is only good for 10 hours, make sure you change your password before that time</h2>
+            <a style="float: left; margin: 10px 0; font: 14px arial; padding: 10px; border-radius: 3px; cursor: pointer; text-decoration: none; background: white; color: black;" href='${url}'>Click here to reset password</a>
+        </div>
+        `)
+        if(mail) {
+            console.log(mail)
+        }
         res.status(200).send({Confirmed: "Success"})
     } catch (e) {
         console.log(e)
