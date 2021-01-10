@@ -78,7 +78,7 @@ exports.removeById = (req, res) => {
 exports.forgotPassword = async (req, res) => {
     let token = jwt.sign({email: req.params.email}, jwtSecret);
     console.log(req.params.email)
-    const url = 'http://localhost:3000/changepassword?auth=' + token;
+    const url = 'https://synapaseflash.com/changepassword?auth=' + token;
     try {
         const mail = await sendMail.sendNewEmail(req.params.email, `Click Here: ${url}`, 'Forgot Password')
         res.status(200).send({Confirmed: "Success"})
